@@ -25,11 +25,10 @@ class _RandomCountryState extends State<RandomCountry> {
           child: Text(
             selectedCountry["name"]["common"],
             style: const TextStyle(
-              fontSize: 35.0, // Set the font size
-              fontWeight: FontWeight.bold, // Set the font weight
-              fontStyle: FontStyle.italic, // Set the font style
-              color: Colors.blue, // Set the text color
-              // You can add more styling options here
+              fontSize: 35.0,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.italic,
+              color: Colors.blue,
             ),
           ),
         ),
