@@ -20,8 +20,18 @@ class _RandomCountryState extends State<RandomCountry> {
       dynamic selectedCountry = countries[getRandomIndex(countries.length)];
 
       return <Widget>[
-        Text(
-          selectedCountry["name"]["common"],
+        Padding(
+          padding: const EdgeInsets.only(bottom: 30.0),
+          child: Text(
+            selectedCountry["name"]["common"],
+            style: const TextStyle(
+              fontSize: 35.0, // Set the font size
+              fontWeight: FontWeight.bold, // Set the font weight
+              fontStyle: FontStyle.italic, // Set the font style
+              color: Colors.blue, // Set the text color
+              // You can add more styling options here
+            ),
+          ),
         ),
         Container(
           decoration: BoxDecoration(
