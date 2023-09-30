@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:math';
 
 class RandomCountry extends StatefulWidget {
   const RandomCountry({super.key});
@@ -12,10 +13,26 @@ class RandomCountry extends StatefulWidget {
 
 class _RandomCountryState extends State<RandomCountry> {
   List<dynamic> countries = [];
+  bool loadedCountries = false;
+
+  List<Widget> renderCountryInfo() {
+    return <Widget>[
+      Text(
+        loadedCountries
+            ? countries[getRandomIndex(countries.length)]["name"]["common"]
+            : "Loading...",
+      ),
+    ];
+  }
+
+  int getRandomIndex(int length) {
+    Random random = Random();
+    return random.nextInt(length);
+  }
 
   Future<void> fetchCountries() async {
-    print('fetch being done');
-    const url = 'https://restcountries.com/v3.1/all';
+    const url =
+        'https://restcountries.com/v3.1/all?fields=name,currencies,flags,languages';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -25,7 +42,8 @@ class _RandomCountryState extends State<RandomCountry> {
         setState(() {
           countries = responseData;
         });
-        print('API call successful: $countries');
+        loadedCountries = true;
+        print(countries[0]["name"]["common"]);
       } else {
         // API call failed
         print('Failed to load data: ${response.statusCode}');
@@ -48,11 +66,7 @@ class _RandomCountryState extends State<RandomCountry> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Text(
-              'This is the RANDOM COUNTRY Page',
-            ),
-          ],
+          children: renderCountryInfo(),
         ),
       ),
     );
