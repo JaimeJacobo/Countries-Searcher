@@ -16,13 +16,28 @@ class _RandomCountryState extends State<RandomCountry> {
   bool loadedCountries = false;
 
   List<Widget> renderCountryInfo() {
-    return <Widget>[
-      Text(
-        loadedCountries
-            ? countries[getRandomIndex(countries.length)]["name"]["common"]
-            : "Loading...",
-      ),
-    ];
+    if (loadedCountries) {
+      dynamic selectedCountry = countries[getRandomIndex(countries.length)];
+
+      return <Widget>[
+        Text(
+          selectedCountry["name"]["common"],
+        ),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.black,
+              width: 1.5,
+            ),
+          ),
+          child: Image.network(
+            selectedCountry["flags"]["png"],
+          ),
+        ),
+      ];
+    } else {
+      return <Widget>[const Text('Loading...')];
+    }
   }
 
   int getRandomIndex(int length) {
