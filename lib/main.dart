@@ -1,21 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'screens/home.dart';
 import 'screens/random_country.dart';
 import 'screens/favorites.dart';
+import 'screens/signup.dart';
+import 'screens/login.dart';
 import 'screens/profile.dart';
 
-void main() {
-  runApp(const MyApp());
+// Firebase
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+class AppState extends ChangeNotifier {
+  int navbarIndex = 0;
+
+  void changeNavbarIndex(int newIndex) {
+    navbarIndex = newIndex;
+    notifyListeners();
+  }
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => AppState(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => const Login(),
+        '/signup': (context) => const Signup(),
+      },
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -34,39 +64,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // int _counter = 0;
-  //
-  // void _incrementCounter() {
-  //   setState(() {
-  //     _counter++;
-  //   });
-  // }
-
   int _navbarIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    // Provider
+    // final appState = Provider.of<AppState>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        automaticallyImplyLeading: false,
       ),
       body: <Widget>[
-        Container(
-          alignment: Alignment.center,
-          child: const Home(),
-        ),
-        Container(
-          alignment: Alignment.center,
-          child: const RandomCountry(),
-        ),
-        Container(
-          alignment: Alignment.center,
-          child: const Favorites(),
-        ),
-        Container(
-          alignment: Alignment.center,
-          child: const Profile(),
-        ),
+        const Home(),
+        const RandomCountry(),
+        const Favorites(),
+        const Profile(),
       ][_navbarIndex],
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
