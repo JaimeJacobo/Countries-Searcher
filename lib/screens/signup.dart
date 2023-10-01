@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'login.dart';
+
+// Firebase
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Signup extends StatefulWidget {
   const Signup({Key? key}) : super(key: key);
@@ -11,7 +16,7 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +28,7 @@ class _SignupState extends State<Signup> {
             const Padding(
               padding: EdgeInsets.only(bottom: 20.0),
               child: Text(
-                'Signup Page',
+                'Sign Up',
                 style: TextStyle(
                   fontSize: 35.0,
                   fontWeight: FontWeight.bold,
@@ -35,7 +40,7 @@ class _SignupState extends State<Signup> {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
                 child: TextField(
-                  controller: _usernameController,
+                  controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Username',
                     border: OutlineInputBorder(
@@ -64,11 +69,25 @@ class _SignupState extends State<Signup> {
                 Padding(
                   padding: const EdgeInsets.only(right: 8.0, top: 8.0),
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Navigator.pushNamed(context, '/login');
-                      print('Signing up');
+                    onPressed: () async {
+                      NavigatorState navigatorState = Navigator.of(context);
+                      try {
+                        await FirebaseAuth.instance
+                            .createUserWithEmailAndPassword(
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                        );
+                        bool result = await _showSuccessSnackbar();
+                        if (result) {
+                          // Use the stored NavigatorState to navigate
+                          navigatorState.pushNamed('/login');
+                        }
+                      } catch (error) {
+                        print('Failed to sign up');
+                        print(error.toString());
+                      }
                     },
-                    child: const Text('Create Account'),
+                    child: const Text('Sign Up'),
                   ),
                 ),
                 Padding(
@@ -90,5 +109,34 @@ class _SignupState extends State<Signup> {
         ),
       ),
     );
+  }
+
+  Future<bool> _showSuccessSnackbar() async {
+    Completer<bool> completer = Completer<bool>();
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Row(
+        children: const <Widget>[
+          Icon(
+            Icons.check_circle,
+            color: Colors.green,
+          ),
+          SizedBox(width: 10),
+          Text(
+            'Sign up successfully',
+            style: TextStyle(color: Colors.green),
+          ),
+        ],
+      ),
+      duration: const Duration(seconds: 2),
+    ));
+
+    // Run something after the Snackbar duration ends
+    Duration duration = const Duration(seconds: 2);
+    await Future.delayed(duration, () {
+      completer.complete(true);
+    });
+
+    return completer.future; // Return the Future<bool>
   }
 }
