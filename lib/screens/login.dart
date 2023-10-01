@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+// Firebase
+import 'package:firebase_auth/firebase_auth.dart';
+
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
@@ -9,7 +12,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +36,7 @@ class _LoginState extends State<Login> {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
                 child: TextField(
-                  controller: _usernameController,
+                  controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Username',
                     border: OutlineInputBorder(
@@ -55,6 +58,43 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0, top: 8.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      NavigatorState navigatorState = Navigator.of(context);
+                      try {
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                        );
+                        navigatorState.pushNamed('/');
+                      } catch (error) {
+                        print('Failed to Log In');
+                        print(error.toString());
+                      }
+                    },
+                    child: const Text('Log In'),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/signup');
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.blueGrey), // Set the background color here
+                    ),
+                    child: const Text('Create Account'),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
