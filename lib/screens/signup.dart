@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'login.dart';
@@ -71,15 +72,21 @@ class _SignupState extends State<Signup> {
                   child: ElevatedButton(
                     onPressed: () async {
                       NavigatorState navigatorState = Navigator.of(context);
+                      CollectionReference users =
+                          FirebaseFirestore.instance.collection('users');
                       try {
-                        await FirebaseAuth.instance
+                        UserCredential userCredential = await FirebaseAuth
+                            .instance
                             .createUserWithEmailAndPassword(
                           email: _emailController.text,
                           password: _passwordController.text,
                         );
+                        await users.doc(userCredential.user!.uid).set({
+                          'email': _emailController.text,
+                          'favoriteCountries': [],
+                        });
                         bool result = await _showSuccessSnackbar();
                         if (result) {
-                          // Use the stored NavigatorState to navigate
                           navigatorState.pushNamed('/login');
                         }
                       } catch (error) {
@@ -93,8 +100,9 @@ class _SignupState extends State<Signup> {
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0, top: 8.0),
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/login');
+                    onPressed: () async {
+                      NavigatorState navigatorState = Navigator.of(context);
+                      navigatorState.pushNamed('/login');
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(
