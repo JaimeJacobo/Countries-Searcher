@@ -1,8 +1,12 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
+
+// Firebase
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RandomCountry extends StatefulWidget {
   const RandomCountry({super.key});
@@ -43,6 +47,38 @@ class _RandomCountryState extends State<RandomCountry> {
             selectedCountry["flags"]["png"],
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: ElevatedButton(
+            onPressed: () async {
+              try {
+                User? currentUser = FirebaseAuth.instance.currentUser;
+                CollectionReference users =
+                    FirebaseFirestore.instance.collection('users');
+
+                if (currentUser != null) {
+                  await users.doc(currentUser.uid).update({
+                    'favoriteCountries': FieldValue.arrayUnion([
+                      {
+                        "name": selectedCountry["name"]["common"],
+                        "flag": selectedCountry["flags"]["png"],
+                      }
+                    ])
+                  });
+                }
+                print('Country added correctly');
+              } catch (err) {
+                print('Error registering favorite country');
+                print(err);
+              }
+            },
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  Colors.green), // Set the background color here
+            ),
+            child: const Text('Add to Favorites'),
+          ),
+        ),
       ];
     } else {
       return <Widget>[const Text('Loading...')];
@@ -67,7 +103,6 @@ class _RandomCountryState extends State<RandomCountry> {
           countries = responseData;
         });
         loadedCountries = true;
-        print(countries[0]["name"]["common"]);
       } else {
         // API call failed
         print('Failed to load data: ${response.statusCode}');
