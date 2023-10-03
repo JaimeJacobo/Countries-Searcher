@@ -15,8 +15,16 @@ class _HomeState extends State<Home> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const <Widget>[
-            Text(
-              'This is the HOME Page',
+            Padding(
+              padding: EdgeInsets.all(30.0),
+              child: Text(
+                'Welcome to Country Searcher! Search for random countries and discover new flags!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 30.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         ),

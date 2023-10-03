@@ -22,7 +22,6 @@ class _FavoritesState extends State<Favorites> {
       setState(() {
         userInfo = result;
       });
-      print(userInfo);
     });
   }
 
