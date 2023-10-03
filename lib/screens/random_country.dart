@@ -66,7 +66,6 @@ class _RandomCountryState extends State<RandomCountry> {
                     ])
                   });
                 }
-                print('Country added correctly');
               } catch (err) {
                 print('Error registering favorite country');
                 print(err);
